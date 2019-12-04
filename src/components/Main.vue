@@ -1,69 +1,85 @@
 <template>
-  <div class="mainContent">
-    <el-row class="tac list">
-      <el-col :span="12">
-        <h5>自定义颜色</h5>
-        <el-menu
-          default-active="2"
-          class="el-menu-vertical-demo"
-          @open="handleOpen"
-          @close="handleClose"
-          background-color="#545c64"
-          text-color="#fff"
-          active-text-color="#ffd04b"
-        >
-          <el-submenu index="1">
-            <template slot="title">
-              <i class="el-icon-location"></i>
-              <span>导航一</span>
-            </template>
-            <el-menu-item-group>
-              <template slot="title">分组一</template>
-              <el-menu-item index="1-1">选项1</el-menu-item>
-              <el-menu-item index="1-2">选项2</el-menu-item>
-            </el-menu-item-group>
-            <el-menu-item-group title="分组2">
-              <el-menu-item index="1-3">选项3</el-menu-item>
-            </el-menu-item-group>
-            <el-submenu index="1-4">
-              <template slot="title">选项4</template>
-              <el-menu-item index="1-4-1">选项1</el-menu-item>
-            </el-submenu>
-          </el-submenu>
-          <el-menu-item index="2">
-            <i class="el-icon-menu"></i>
-            <span slot="title">导航二</span>
-          </el-menu-item>
-          <el-menu-item index="3" disabled>
-            <i class="el-icon-document"></i>
-            <span slot="title">导航三</span>
-          </el-menu-item>
-          <el-menu-item index="4">
-            <i class="el-icon-setting"></i>
-            <span slot="title">导航四</span>
-          </el-menu-item>
-        </el-menu>
-      </el-col>
-    </el-row>
-  </div>
+  <el-container class="AllBox">
+    <el-header class="Header">
+      <!-- <img src="../assets/CCCP.png" /> -->
+      数据库管理系统
+      <span class="Glg">注销</span>
+    </el-header>
+    <el-container class="Sider">
+      <el-aside width="200px">
+        <el-row class="tac">
+          <el-col :span="24">
+            <h5>数据库操作</h5>
+            <el-menu
+              default-active="2"
+              class="el-menu-vertical-demo"
+              background-color="#545c64"
+              text-color="#fff"
+              @open="handleOpen"
+              @close="handleClose"
+              :router="true"
+              active-text-color="#ffd04b"
+            >
+              <el-submenu index="1">
+                <template slot="title">
+                  <i class="el-icon-location"></i>
+                  <span>数据</span>
+                </template>
+
+                <el-menu-item-group>
+                  <template slot="title"></template>
+                  <el-menu-item
+                    v-for="(value, key) in Databases"
+                    :key="key"
+                    :index="`/Table/${value.Database}`"
+                  >{{value.Database}}</el-menu-item>
+                </el-menu-item-group>
+              </el-submenu>
+              <el-submenu index="1">
+                <template slot="title">
+                  <i class="el-icon-location"></i>
+                  <span>设置</span>
+                </template>
+              </el-submenu>
+            </el-menu>
+          </el-col>
+        </el-row>
+      </el-aside>
+      <el-main class="Main">
+        <router-view></router-view>
+      </el-main>
+    </el-container>
+  </el-container>
 </template>
 
 <script>
 export default {
-  data () {
+  data: function () {
     return {
-      activeIndex: '1',
-      activeIndex2: '1'
+      Databases: [1, 2, 3],
+      Msg: '2333'
     }
   },
+  mounted: function () {
+    console.log(this)
+    this.$ajax({
+      method: 'post',
+      url: 'http://localhost:8081/Query',
+      data: { token: localStorage.getItem('token'), cmd: 'show databases' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }).then(response => {
+      console.log(response)
+      this.Databases = response.data.DATA
+    })
+  },
   methods: {
+    handleWord (key) {
+      return 'Table/' + key
+    },
     handleOpen (key, keyPath) {
       console.log(key, keyPath)
     },
     handleClose (key, keyPath) {
-      console.log(key, keyPath)
-    },
-    handleSelect (key, keyPath) {
       console.log(key, keyPath)
     }
   }
@@ -71,8 +87,30 @@ export default {
 </script>
 
 <style lang='less'>
-.mainContent {
-  padding: 0px;
-  margin: 0px;
+.AllBox {
+  height: 100%;
+  .Header {
+    background: grey;
+    line-height: 60px;
+    font-size: 24px;
+    font-weight: bold;
+    color: red;
+    img {
+      height: 50px;
+      margin-top: 5px;
+      float: left;
+    }
+    span {
+      float: right;
+      width: 180px;
+    }
+  }
+  .Sider {
+    background: #545c64;
+    color: red;
+  }
+  .Main {
+    background: white;
+  }
 }
 </style>

@@ -64,12 +64,10 @@ export default {
             method: 'post',
             url: 'http://localhost:8081/Login',
             data: this.ruleForm,
-
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
           }).then(response => {
             console.log(response)
             if (response.data.result) {
-              console.log('Logined')
               localStorage.setItem('token', response.data.token)
               this.$router.push({ name: 'Main' })
               this.$message({

@@ -5,10 +5,14 @@
 </template>
 
 <style lang="less">
+html {
+  height: 100%;
+}
 body {
   background: #42b983;
   margin: 0px;
   padding: 0px;
+  height: 100%;
 }
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
@@ -16,5 +20,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  height: 100%;
 }
 </style>
