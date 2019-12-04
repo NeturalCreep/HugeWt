@@ -26,16 +26,17 @@
                   <span>数据</span>
                 </template>
 
-                <el-menu-item-group>
-                  <template slot="title"></template>
-                  <el-menu-item
-                    v-for="(value, key) in Databases"
-                    :key="key"
-                    :index="`/Table/${value.Database}`"
-                  >{{value.Database}}</el-menu-item>
-                </el-menu-item-group>
+                <!-- :index="`/Table/${value.Database}`" -->
+                <el-submenu :index="`1-${key}`" v-for="(value, key) in Databases" :key="key">
+                  <template slot="title">
+                    <span>{{value.TABLENAME.Database}}</span>
+                  </template>
+                  <template v-for="(data, dkey) in value.DATA">
+                    <el-menu-item :index="`1-${key}`" :key="dkey">{{data[value.TABLENAME.Database]}}</el-menu-item>
+                  </template>
+                </el-submenu>
               </el-submenu>
-              <el-submenu index="1">
+              <el-submenu index="2">
                 <template slot="title">
                   <i class="el-icon-location"></i>
                   <span>设置</span>
@@ -56,21 +57,50 @@
 export default {
   data: function () {
     return {
-      Databases: [1, 2, 3],
-      Msg: '2333'
+      DatabasesName: [],
+      Databases: []
     }
   },
   mounted: function () {
-    console.log(this)
     this.$ajax({
       method: 'post',
       url: 'http://localhost:8081/Query',
       data: { token: localStorage.getItem('token'), cmd: 'show databases' },
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     }).then(response => {
-      console.log(response)
-      this.Databases = response.data.DATA
+      this.DatabasesName = response.data.DATA
+
+      for (var i = 0; i < this.DatabasesName.length; i++) {
+        this.$ajax({
+          method: 'post',
+          url: 'http://localhost:8081/Query',
+          data: {
+            token: localStorage.getItem('token'),
+            cmd:
+              'select table_name as ' +
+              this.DatabasesName[i].Database +
+              " from information_schema.tables where table_schema ='" +
+              this.DatabasesName[i].Database +
+              "'"
+          },
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }).then(datares => {
+          for (var keyname in datares.data.DATA[0]) {
+            for (var index = 0; index < this.DatabasesName.length; index++) {
+              if (this.DatabasesName[index].Database === keyname) {
+                this.Databases.push({
+                  TABLENAME: this.DatabasesName[index],
+                  DATA: datares.data.DATA
+                })
+              }
+            }
+          }
+        })
+      }
     })
+  },
+  updated: function () {
+    console.log(this.Databases)
   },
   methods: {
     handleWord (key) {

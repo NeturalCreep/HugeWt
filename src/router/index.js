@@ -12,7 +12,7 @@ Vue.prototype.$ajax = axios
 
 const routes = [
   {
-    path: '',
+    path: '/',
     name: 'default',
     component: Login
   },
@@ -31,16 +31,18 @@ const routes = [
   }
 ]
 
-let Vm
 const router = new VueRouter({
   routes
 })
 router.beforeEach(function (to, from, next) {
   if (to.name === 'test') {
-    console.log('TEST!')
-    console.log(Vm)
+    console.log(router.app)
+    if (router.app._route !== undefined) {
+      console.log(router.app)
+      console.log(router.app._route.params.id)
+    }
   }
-  if (to.name === 'Login') {
+  if (to.name === 'Login' || to.name === 'default') {
     next()
   } else {
     if (localStorage.getItem('token') != null) {
@@ -57,7 +59,7 @@ router.beforeEach(function (to, from, next) {
         if (response.data.result) {
           next()
         } else {
-          Vm.$message({
+          router.app.$message({
             message: '登录已失效',
             type: 'error'
           })
@@ -65,7 +67,7 @@ router.beforeEach(function (to, from, next) {
         }
       })
     } else {
-      Vm.$message({
+      router.app.$message({
         message: '请先登录！',
         type: 'warning'
       })
@@ -76,7 +78,7 @@ router.beforeEach(function (to, from, next) {
 const Router = {
   router: router,
   init: (vm) => {
-    Vm = vm
+    router.app = vm
   }
 }
 export default {
