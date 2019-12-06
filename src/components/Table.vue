@@ -1,6 +1,11 @@
 
 <template>
   <div>
+    <el-breadcrumb separator-class="el-icon-arrow-right">
+      <el-breadcrumb-item :to="{ path: '/Main' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item v-if="path!==undefined">{{path===undefined?'数据库名':path.params.DATABASE}}</el-breadcrumb-item>
+      <el-breadcrumb-item v-if="path!==undefined">{{path===undefined?'表名':path.params.TABLENAME}}</el-breadcrumb-item>
+    </el-breadcrumb>
     <el-drawer :visible.sync="drawer" :direction="direction" :before-close="handleClose">
       <div v-for="(value,key,index) in SelectRow" :key=" index">
         <h5>{{key}}:</h5>
@@ -53,6 +58,7 @@
 export default {
   data: function () {
     return {
+      path: undefined,
       ChangRow: {},
       SelectRow: {},
       DATA: [],
@@ -167,7 +173,7 @@ export default {
     Update: function (path) {
       console.log('路由路径发生了改变：')
       console.log(path)
-
+      this.path = path
       this.$ajax({
         method: 'post',
         url: 'http://localhost:8081/Query',
