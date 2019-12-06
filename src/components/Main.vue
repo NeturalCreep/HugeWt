@@ -15,8 +15,6 @@
               class="el-menu-vertical-demo"
               background-color="#545c64"
               text-color="#fff"
-              @open="handleOpen"
-              @close="handleClose"
               :router="true"
               active-text-color="#ffd04b"
             >
@@ -32,7 +30,10 @@
                     <span>{{value.TABLENAME.Database}}</span>
                   </template>
                   <template v-for="(data, dkey) in value.DATA">
-                    <el-menu-item :index="`1-${key}`" :key="dkey">{{data[value.TABLENAME.Database]}}</el-menu-item>
+                    <el-menu-item
+                      :index="`/Table/${value.TABLENAME.Database}/${data[value.TABLENAME.Database]}`"
+                      :key="dkey"
+                    >{{data[value.TABLENAME.Database]}}</el-menu-item>
                   </template>
                 </el-submenu>
               </el-submenu>
@@ -85,33 +86,21 @@ export default {
           },
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         }).then(datares => {
-          for (var keyname in datares.data.DATA[0]) {
-            for (var index = 0; index < this.DatabasesName.length; index++) {
-              if (this.DatabasesName[index].Database === keyname) {
-                this.Databases.push({
-                  TABLENAME: this.DatabasesName[index],
-                  DATA: datares.data.DATA
-                })
+          if (datares.data.DATA !== null) {
+            for (var keyname in datares.data.DATA[0]) {
+              for (var index = 0; index < this.DatabasesName.length; index++) {
+                if (this.DatabasesName[index].Database === keyname) {
+                  this.Databases.push({
+                    TABLENAME: this.DatabasesName[index],
+                    DATA: datares.data.DATA
+                  })
+                }
               }
             }
           }
         })
       }
     })
-  },
-  updated: function () {
-    console.log(this.Databases)
-  },
-  methods: {
-    handleWord (key) {
-      return 'Table/' + key
-    },
-    handleOpen (key, keyPath) {
-      console.log(key, keyPath)
-    },
-    handleClose (key, keyPath) {
-      console.log(key, keyPath)
-    }
   }
 }
 </script>

@@ -56,8 +56,34 @@ export default {
       }
     }
   },
+  mounted: function () {
+    axios({
+      method: 'post',
+      url: 'http://localhost:8081/Login',
+      data: this.ruleForm,
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }).then(response => {
+      console.log(response)
+      if (response.data.result) {
+        this.$router.push({ name: 'Main' })
+        this.$message({
+          message: '登录成功！',
+          type: 'success'
+        })
+      } else {
+        if (response.data.error != null && response.data.error === '1') {
+          this.$message({
+            message: '登录状态过期，请重新登录！',
+            type: 'error'
+          })
+          this.ruleForm.token = ''
+        }
+      }
+    })
+  },
   methods: {
     Login (formName) {
+      console.log(formName)
       this.$refs[formName].validate(valid => {
         if (valid) {
           axios({
