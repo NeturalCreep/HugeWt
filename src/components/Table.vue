@@ -8,7 +8,12 @@
       </div>
       <el-button type="primary" @click="UpdateData">保存</el-button>
     </el-drawer>
-    <el-table :data="DATA" @row-dblclick="TableClick" stripe style="width: 100%">
+    <el-table
+      :data="DATA.slice((currentPage-1)*pagesize,currentPage*pagesize)"
+      @row-dblclick="TableClick"
+      stripe
+      style="width: 100%"
+    >
       <el-table-column type="expand">
         <template slot-scope="props">
           <el-form label-position="left" inline class="demo-table-expand">
@@ -32,6 +37,15 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-pagination
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="currentPage"
+      :page-sizes="[5, 10, 20, 40]"
+      :page-size="pagesize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="DATA.length"
+    ></el-pagination>
   </div>
 </template>
 
@@ -43,7 +57,10 @@ export default {
       SelectRow: {},
       DATA: [],
       drawer: false,
-      direction: 'rtl'
+      direction: 'rtl',
+      currentPage: 1, // 初始页
+      pagesize: 10, //    每页的数据
+      userList: []
     }
   },
   created: function () {
@@ -51,6 +68,20 @@ export default {
     this.$router.events.$emit('setTableView', this)
   },
   methods: {
+    handleSizeChange: function (size) {
+      this.pagesize = size
+      console.log(this.pagesize) // 每页下拉显示数据
+    },
+    handleCurrentChange: function (currentPage) {
+      this.currentPage = currentPage
+      console.log(this.currentPage) // 点击第几页
+    },
+    handleUserList () {
+      this.$http.get('http://localhost:3000/userList').then(res => {
+        // 这是从本地请求的数据接口，
+        this.userList = res.body
+      })
+    },
     handleClose (done) {
       this.$confirm('确认关闭？')
         .then(_ => {
