@@ -55,14 +55,40 @@ export default {
       this.$confirm('确认关闭？')
         .then(_ => {
           done()
-          this.SelectRow = this.ChangRow
+          this.extend(this.SelectRow, this.ChangRow)
           console.log(this.SelectRow)
         })
         .catch(_ => {})
     },
+    extend (obj1, obj2) {
+      for (var obj in obj2) {
+        obj1[obj] = obj2[obj]
+      }
+
+      return obj1
+    },
+    clone (obj) {
+      let temp = null
+      if (obj instanceof Array) {
+        temp = obj.concat()
+      } else if (obj instanceof Function) {
+        // 函数是共享的是无所谓的，js也没有什么办法可以在定义后再修改函数内容
+        temp = obj
+      } else {
+        temp = {}
+        for (let item in obj) {
+          let val = obj[item]
+          temp[item] = typeof val === 'object' ? this.clone(val) : val // 这里也没有判断是否为函数，因为对于函数，我们将它和一般值一样处理
+        }
+      }
+      return temp
+    },
     TableClick (row, column, event) {
+      console.log(row)
       this.SelectRow = row
-      Object.assign(this.ChangRow, row)
+      this.ChangRow = this.clone(row)
+      console.log(this.SelectRow)
+      console.log(this.ChangRow)
       this.drawer = true
     },
     // UPDATE 表名称 SET 列名称 = 新值 WHERE 列名称 = 某值
@@ -83,15 +109,29 @@ export default {
       }
       Command = Command.slice(0, Command.length - 4)
       console.log(Command)
-      // this.$ajax({
-      //   method: 'post',
-      //   url: 'http://localhost:8081/Query',
-      //   data: {
-      //     token: localStorage.getItem('token'),
-      //     cmd: Command
-      //   },
-      //   headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-      // }).then(datares => {})
+      this.$ajax({
+        method: 'post',
+        url: 'http://localhost:8081/Query',
+        data: {
+          token: localStorage.getItem('token'),
+          cmd: Command
+        },
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }).then(datares => {
+        console.log(datares)
+        if (datares.data.result) {
+          this.$message({
+            message: '更新成功!',
+            type: 'success'
+          })
+          this.drawer = false
+        } else {
+          this.$message({
+            message: '更新失败!',
+            type: 'error'
+          })
+        }
+      })
     },
     Update: function (path) {
       console.log('路由路径发生了改变：')
