@@ -4,7 +4,21 @@ import Router from './router'
 import 'element-ui/lib/theme-chalk/index.css'
 import ElementUI from 'element-ui'
 import Axios from 'axios'
+import Vuex from 'vuex'
+Vue.use(Vuex)
 
+const store = new Vuex.Store({
+  state: {
+    AllDataBase: undefined
+  },
+  mutations: {
+    SetDataBase: function (GetObject, databases) {
+      console.log(GetObject, databases)
+      GetObject.AllDataBase = databases
+    }
+  },
+  strict: true
+})
 const EventBus = new Vue({
   data: {
     tableView: undefined,
@@ -35,6 +49,7 @@ console.log('Vue 数据总线 注册完毕')
 Vue.prototype.$ajax = Axios
 Vue.use(ElementUI)
 new Vue({
+  store,
   router: Router.router,
   render: h => h(App)
 }).$mount('#app')

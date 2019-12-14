@@ -1,11 +1,6 @@
 
 <template>
   <div>
-    <el-breadcrumb separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/Main' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item v-if="path!==undefined">{{path===undefined?'数据库名':path.params.DATABASE}}</el-breadcrumb-item>
-      <el-breadcrumb-item v-if="path!==undefined">{{path===undefined?'表名':path.params.TABLENAME}}</el-breadcrumb-item>
-    </el-breadcrumb>
     <el-drawer :visible.sync="drawer" :direction="direction" :before-close="handleClose">
       <div v-for="(value,key,index) in SelectRow" :key=" index">
         <h5>{{key}}:</h5>

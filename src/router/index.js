@@ -5,7 +5,9 @@ import Login from '../components/Login.vue'
 import less from 'less'
 import axios from 'axios'
 import Main from '../components/Main.vue'
-
+import Users from '../components/Users.vue'
+import Create from '../components/Create.vue'
+import Query from '../components/Query.vue'
 Vue.use(VueRouter)
 Vue.use(less)
 Vue.prototype.$ajax = axios
@@ -27,7 +29,10 @@ const routes = [
     component: Main,
     children: [
       { path: '/Main/', name: 'Tabledefault', component: Table },
-      { path: '/Table/:DATABASE/:TABLENAME', name: 'test', component: Table }
+      { path: '/Table/:DATABASE/:TABLENAME', name: 'Table', component: Table },
+      { path: '/Users', name: 'Users', component: Users },
+      { path: '/Create', name: 'Create', component: Create },
+      { path: '/Query', name: 'Query', component: Query }
     ]
   }
 ]
@@ -36,7 +41,7 @@ const router = new VueRouter({
   routes
 })
 router.beforeEach(function (to, from, next) {
-  if (to.name === 'test') {
+  if (to.name === 'Table') {
     if (router.events !== undefined) {
       console.log('检测到路由跳转需求 ')
       router.events.$emit('setpath', to)
